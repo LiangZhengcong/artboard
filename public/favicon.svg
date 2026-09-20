@@ -1,6 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="16" fill="#e8f7f1"/>
-  <path d="M45.5 20.5A17 17 0 1 0 46 43" fill="none" stroke="#276b62" stroke-width="6" stroke-linecap="round"/>
-  <path d="M10 29c8-5 14 5 22 0s14 5 22 0" fill="none" stroke="#82cdbb" stroke-width="2.5" stroke-linecap="round"/>
-  <path d="M10 36c8 5 14-5 22 0s14-5 22 0" fill="none" stroke="#b6a8df" stroke-width="2.5" stroke-linecap="round"/>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eef5ff"/><stop offset="1" stop-color="#dbe6f5"/></linearGradient>
+    <linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#244b9b"/><stop offset=".52" stop-color="#d64864"/><stop offset="1" stop-color="#ef9e35"/></linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#bg)"/>
+  <rect x="7" y="7" width="50" height="50" rx="11" fill="#fff" stroke="#c5d0e1" stroke-width="2"/>
+  <path d="M17 47 28 17h8l11 30h-8l-2.3-7H27.2l-2.4 7H17Zm12.3-14h5.4L32 24.8 29.3 33Z" fill="url(#a)"/>
+  <path d="M16 50h32" stroke="#9bb0cf" stroke-width="2" stroke-linecap="round" opacity=".8"/>
 </svg>

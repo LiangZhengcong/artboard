@@ -29,6 +29,8 @@ function createRandomDraft() {
     palette: paletteNames[Math.floor(secureRandom() * paletteNames.length)],
     intensity: Number((0.25 + secureRandom() * 0.7).toFixed(2)),
     outlined: secureRandom() >= 0.5,
+    style: 'outline',
+    fontSize: 100,
   }
 }
 
@@ -175,6 +177,135 @@ function renderCaptcha(canvas, item) {
   paintLines(ctx, palette, rng, item.intensity)
 }
 
+const collageStyles = {
+  outline: { label: '空心轮廓', font: 'Arial', colors: ['#ffffff'], extrusion: '#000000', stroke: '#000000', strokeWidth: .03, scaleY: 1.2 },
+  up: { label: '上扬黑体', font: 'Arial', colors: ['#000000'], extrusion: '#000000', skewY: -0.26, scaleY: 1.4 },
+  arc: { label: '弧形彩虹', font: 'Arial', colors: ['#ee00ff', '#ff3030', '#ff9900', '#fff430', '#00ff08', '#3223ff'], extrusion: '#777777', scaleY: 1.3 },
+  squeeze: { label: '压缩蓝字', font: 'Arial', colors: ['#24c0fd'], extrusion: '#0000aa', stroke: '#0000aa', scaleY: .75 },
+  invertedArc: { label: '倒弧阴影', font: 'Arial', colors: ['#ffffff'], extrusion: '#333333', stroke: '#333333', scaleY: 1.2 },
+  basicStack: { label: '基础堆叠', font: 'Arial', colors: ['#ffffff'], extrusion: '#777777', stroke: '#111111', scaleY: 1.2 },
+  italicOutline: { label: '斜体描边', font: 'Arial', colors: ['#ffffff'], extrusion: '#6d6d6d', stroke: '#000000', italic: true, scaleY: 1.3 },
+  slate: { label: '石板蓝', font: 'Times New Roman', colors: ['#2f5485'], extrusion: '#b3b3b3', scaleY: 1.5 },
+  mauve: { label: '淡紫浮雕', font: 'Georgia', colors: ['#fafacc', '#f3919b'], extrusion: '#777777', scaleY: 1.3 },
+  graydient: { label: '灰色渐变', font: 'Arial', colors: ['#9d9d9d', '#ffffff'], extrusion: '#5b5b5b', scaleY: 1.3 },
+  redBlue: { label: '红蓝套印', font: 'Arial', colors: ['#f22', '#fff'], extrusion: '#153c8f', stroke: '#153c8f' },
+  brownStack: { label: '棕色堆叠', font: 'Arial', colors: ['#f7e3b1', '#9b5c23'], extrusion: '#130c02', scaleY: 1.2 },
+  radial: { label: '放射金橙', font: 'Arial', colors: ['#fffa28', '#ec8a39'], extrusion: '#b3b3b3', radial: true, scaleY: 1.2 },
+  purple: { label: '紫色渐变', font: 'Impact', colors: ['#4222be', '#a62cc1'], extrusion: '#828dfb', stroke: '#b28ffd', strokeWidth: .01, skewY: -.18, gradientDirection: 'vertical', scaleY: 1.5 },
+  greenMarble: { label: '绿色大理石', font: 'Times New Roman', colors: ['#b2cabd', '#1f4427'], extrusion: '#1f4427', scaleY: 1.2 },
+  rainbow: { label: '彩虹艺术字', font: 'Arial', colors: ['#ee00ff', '#ff3030', '#ff9900', '#fff430', '#00ff08', '#3223ff', '#aa00ff'], extrusion: 'rgba(50,50,50,.3)', shadowSkew: true, noExtrusion: true, shadowSkewX: .866, shadowOffsetX: -.4, shadowOffsetY: .17, gradientDirection: 'horizontal', scaleY: 1.5 },
+  aqua: { label: '水蓝立体', font: 'Arial', colors: ['#d9ffff', '#18b8cb'], extrusion: '#08606d', scaleY: 1.3 },
+  textureStack: { label: '纹理堆叠', font: 'Arial', colors: ['#d9c4a0', '#836038'], extrusion: '#302010', scaleY: 1.3 },
+  paperBag: { label: '纸袋棕', font: 'Arial', colors: ['#c99559', '#75451f'], extrusion: '#130c02', scaleY: 1.3 },
+  sunset: { label: '日落橙红', font: 'Times New Roman', colors: ['#fafacc', '#f3919b'], extrusion: '#081a33', gradientDirection: 'vertical', scaleY: 1.2 },
+  tilt: { label: '倾斜金棕', font: 'Arial', colors: ['#390c0b', '#f6bf28'], extrusion: '#6d4916', skewY: -.26, gradientDirection: 'vertical', scaleY: 2 },
+  blues: { label: '蓝色描边', font: 'Impact', colors: ['#24c0fd'], extrusion: '#0000aa', stroke: '#0000aa', strokeWidth: .02, textShadow: [-.13, -.13], scaleY: 1.22 },
+  yellowDash: { label: '黄色虚线', font: 'Arial', colors: ['#ffff35', '#d6a000'], extrusion: '#645000', stroke: '#8b7500', scaleY: 1.2 },
+  greenStack: { label: '绿色堆叠', font: 'Arial', colors: ['#b3e34a', '#13552a'], extrusion: '#062d14', scaleY: 1.2 },
+  chrome: { label: '金属铬色', font: 'Times New Roman', colors: ['#b5b5b5', '#4f4f4f', '#f9f9f9', '#212121', '#d3d3d3'], extrusion: '#2b2b2b', gradientDirection: 'vertical', scaleY: 1.3 },
+  marbleSlab: { label: '大理石厚板', font: 'Arial', colors: ['#d4d5c4', '#63675c'], extrusion: '#030b00', scaleY: 1.2, rotate: -.12 },
+  grayBlock: { label: '灰色方块', font: 'Arial', colors: ['#b5b5b5', '#4f4f4f'], extrusion: '#212121', scaleY: 1.3 },
+  superhero: { label: '超级英雄', font: 'Impact', colors: ['#fdea00', '#fdcf00', '#fc2700'], extrusion: '#802700', skewY: -.26, gradientDirection: 'vertical', scaleY: 1.5 },
+  horizon: { label: '地平线', font: 'Arial', colors: ['#7286a7', '#7286a7', '#ffffff', '#812f30', '#ffffff'], extrusion: '#161616', gradientDirection: 'vertical', scaleY: .96 },
+  stack3d: { label: '三维立体', font: 'Arial', colors: ['#828dfb', '#378484'], extrusion: '#771515', skewY: -.18, scaleY: 1.3 },
+}
+function addGradientStops(gradient, colors) {
+  colors.forEach((color, index) => gradient.addColorStop(index / Math.max(colors.length - 1, 1), color))
+}
+
+function drawWordArtCharacter(ctx, character, x, y, size, styleName, palette, rng, index) {
+  const style = collageStyles[styleName] || collageStyles.wordart
+  ctx.save()
+  ctx.translate(x, y)
+  if (styleName === 'tilt' || styleName === 'purple') ctx.transform(1, 0, -0.12, 1, 0, 0)
+  if (styleName === 'superhero') ctx.transform(1, 0, -0.16, 1, 0, 0)
+  if (styleName === 'italicOutline') ctx.transform(1, 0, -0.18, 1, 0, 0)
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round'
+  ctx.font = `${styleName === 'italicOutline' ? '700 italic' : styleName === 'slate' || styleName === 'serif' ? '400' : '800'} ${size}px ${style.font}`
+  const gradient = styleName === 'radial'
+    ? ctx.createRadialGradient(0, -size * .4, 2, 0, 0, size)
+    : ctx.createLinearGradient(0, -size * .65, 0, size * .65)
+  addGradientStops(gradient, style.colors)
+  const depth = Math.max(3, size * .075)
+  const steps = styleName === 'ghost' ? 1 : Math.ceil(depth)
+  for (let step = steps; step >= 1; step -= 1) {
+    ctx.fillStyle = style.extrusion
+    ctx.fillText(character, step * .72, step * .72)
+  }
+  ctx.fillStyle = gradient
+  ctx.strokeStyle = styleName === 'blues' || styleName === 'italicOutline' || styleName === 'purple' ? style.extrusion : 'rgba(255,255,255,.2)'
+  ctx.lineWidth = Math.max(1, size * (styleName === 'italicOutline' ? .025 : .012))
+  ctx.strokeText(character, 0, 0)
+  ctx.fillText(character, 0, 0)
+  if (styleName === 'ghost') {
+    ctx.globalAlpha = .18; ctx.fillStyle = '#aeb2b2'; ctx.fillText(character, -size * .08, -size * .07)
+  }
+  ctx.restore()
+}
+
+function renderCollage(canvas, item) {
+  const ctx = canvas.getContext('2d')
+  const style = collageStyles[item.style] || collageStyles.outline
+  const text = item.text.replace(/[\r\n]+/g, ' ').trim()
+  const requestedSize = (Number(item.fontSize) || 100) * (SIZE.width / DEFAULT_SIZE.width)
+  const verticalFactor = style.scaleY || 1
+  const maxVerticalSize = SIZE.height * .52 / Math.max(verticalFactor, 1)
+  const fontSize = clamp(Math.min(requestedSize, maxVerticalSize), 42, 520)
+  ctx.clearRect(0, 0, SIZE.width, SIZE.height)
+  ctx.save()
+  const fontWeight = style.font === 'Times New Roman' ? 400 : 700
+  ctx.font = `${style.italic ? 'italic ' : ''}${fontWeight} ${fontSize}px '${style.font}'`
+  const measured = ctx.measureText(text).width
+  const shadowAllowance = style.shadowSkew ? fontSize * .42 : fontSize * .1
+  const scale = Math.min(1, (SIZE.width - 80 - shadowAllowance) / Math.max(measured, 1))
+  ctx.translate(SIZE.width / 2, SIZE.height / 2)
+  ctx.scale(scale, scale * (style.scaleY || 1))
+  if (style.skewY) ctx.transform(1, 0, style.skewY, 1, 0, 0)
+  if (style.rotate) ctx.rotate(style.rotate)
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round'
+  const gradient = style.radial
+    ? ctx.createRadialGradient(0, -fontSize * .4, 2, 0, 0, fontSize)
+    : style.gradientDirection === 'horizontal'
+      ? ctx.createLinearGradient(-measured / 2, 0, measured / 2, 0)
+      : ctx.createLinearGradient(0, -fontSize * .65, 0, fontSize * .65)
+  addGradientStops(gradient, style.colors)
+  const drawText = (y, reflected = false) => {
+    ctx.save()
+    if (reflected) {
+      ctx.translate(0, y)
+      ctx.scale(1, -.48)
+      ctx.globalAlpha = .24
+    } else {
+      ctx.translate(0, y)
+    }
+    const depth = style.noExtrusion ? 0 : Math.max(1, Math.round(fontSize * (reflected ? .025 : .08)))
+    if (style.shadowSkew && !reflected) {
+      ctx.save()
+      // css3wordart rainbow: :before { top: .17em; left: .4em; skew(60deg) scaleY(.5) }
+      ctx.translate(fontSize * (style.shadowOffsetX ?? -.4), fontSize * (style.shadowOffsetY ?? .17))
+      ctx.transform(1, 0, style.shadowSkewX ?? .866, .5, 0, 0)
+      ctx.globalAlpha = .3
+      ctx.fillStyle = style.extrusion
+      ctx.fillText(text, 0, 0)
+      ctx.restore()
+    }
+    for (let step = depth; step > 0; step -= 1) {
+      ctx.fillStyle = reflected ? '#b9bec1' : style.extrusion
+      ctx.fillText(text, step * .7, step * .7)
+    }
+    ctx.fillStyle = gradient
+    ctx.strokeStyle = style.stroke || 'transparent'
+    ctx.lineWidth = style.stroke ? Math.max(1, fontSize * (style.strokeWidth || .012)) : 0
+    if (style.textShadow) { ctx.fillStyle = style.extrusion; ctx.fillText(text, style.textShadow[0] * fontSize, style.textShadow[1] * fontSize) }
+    ctx.fillStyle = gradient
+    if (ctx.lineWidth) ctx.strokeText(text, 0, 0)
+    ctx.fillText(text, 0, 0)
+    ctx.restore()
+  }
+  drawText(0)
+  ctx.restore()
+}
+
 function safeFileName(text, fallback = 'captcha') {
   const value = text
     .trim()
@@ -293,14 +424,30 @@ function PaletteControl({ value, customPalette, onChange }) {
   )
 }
 
-function CaptchaItem({ item, zoom, viewOffset, selected, adjusting, onSelect, onRegenerate, onDelete, onResizeStart, onMoveStart, onToggleAdjust, onUpdate }) {
+function WordArtStylePicker({ value, onChange }) {
+  const entries = Object.entries(collageStyles)
+  return (
+    <div className="wordart-style-picker" role="listbox" aria-label="艺术字风格">
+      {entries.map(([styleName, style]) => (
+        <button key={styleName} type="button" className={`wordart-style-option${value === styleName ? ' is-selected' : ''}`} aria-label={style.label} aria-selected={value === styleName} onClick={() => onChange(styleName)}>
+          <canvas width={SIZE.width} height={SIZE.height} ref={(canvas) => {
+            if (canvas) renderCollage(canvas, { text: 'WordArt', style: styleName, fontSize: 80, width: 420 })
+          }} />
+          <span>{style.label}</span>
+        </button>
+      ))}
+    </div>
+  )
+}
+
+function CaptchaItem({ item, zoom, viewOffset, selected, adjusting, onSelect, onRegenerate, onDelete, onResizeStart, onMoveStart, onToggleAdjust, onUpdate, renderer = renderCaptcha, mode = 'captcha' }) {
   const itemRef = useRef(null)
   const toolbarRef = useRef(null)
   const adjustmentRef = useRef(null)
   const canvasRef = useRef(null)
   const [toolbarLayout, setToolbarLayout] = useState({ left: 12, top: 12, visibility: 'hidden', side: 'above' })
   const [adjustmentLayout, setAdjustmentLayout] = useState({ left: 12, top: 12, visibility: 'hidden' })
-  useEffect(() => renderCaptcha(canvasRef.current, item), [item])
+  useEffect(() => renderer(canvasRef.current, item), [item, renderer])
 
   useLayoutEffect(() => {
     if (!selected || !itemRef.current || !toolbarRef.current) return undefined
@@ -348,31 +495,15 @@ function CaptchaItem({ item, zoom, viewOffset, selected, adjusting, onSelect, on
       const margin = 12
       const gap = 8
       const maxLeft = Math.max(margin, window.innerWidth - panelRect.width - margin)
-      const maxTop = Math.max(margin, window.innerHeight - panelRect.height - margin)
       const centeredLeft = itemRect.left + itemRect.width / 2 - panelRect.width / 2
-      const aboveToolbar = toolbarRect.top - panelRect.height - gap
-      const belowToolbar = toolbarRect.bottom + gap
-      const aboveItem = itemRect.top - panelRect.height - gap
-      const belowItem = itemRect.bottom + gap
-      let top
-
-      if (toolbarLayout.side === 'above') {
-        top = aboveToolbar >= margin
-          ? aboveToolbar
-          : belowItem + panelRect.height <= window.innerHeight - margin
-            ? belowItem
-            : clamp(aboveToolbar, margin, maxTop)
-      } else {
-        top = belowToolbar + panelRect.height <= window.innerHeight - margin
-          ? belowToolbar
-          : aboveItem >= margin
-            ? aboveItem
-            : clamp(belowToolbar, margin, maxTop)
-      }
+      const availableAbove = Math.max(120, toolbarRect.top - margin - gap)
+      const panelHeight = Math.min(panelRect.height, availableAbove)
+      const top = Math.max(margin, toolbarRect.top - panelHeight - gap)
 
       setAdjustmentLayout({
         left: clamp(centeredLeft, margin, maxLeft),
-        top: clamp(top, margin, maxTop),
+        top,
+        maxHeight: availableAbove,
         visibility: 'visible',
       })
     }
@@ -388,14 +519,13 @@ function CaptchaItem({ item, zoom, viewOffset, selected, adjusting, onSelect, on
   }, [adjusting, zoom, viewOffset.x, viewOffset.y, item.x, item.y, item.width, item.height, item.palette, item.customPalette, toolbarLayout.side, toolbarLayout.left, toolbarLayout.top])
 
   return (
-    <div ref={itemRef} className={`captcha-item${selected ? ' is-selected' : ''}`} style={{ left: viewOffset.x + item.x * zoom, top: viewOffset.y + item.y * zoom, width: item.width * zoom, height: item.height * zoom }}
+    <div ref={itemRef} className={`captcha-item${mode === 'wordArt' ? ' wordart-item' : ''}${selected ? ' is-selected' : ''}`} style={{ left: viewOffset.x + item.x * zoom, top: viewOffset.y + item.y * zoom, width: item.width * zoom, height: item.height * zoom, background: mode === 'wordArt' ? 'transparent' : undefined, boxShadow: mode === 'wordArt' ? 'none' : undefined }}
       onPointerDown={(event) => onMoveStart(item, event)} onClick={(event) => { event.stopPropagation(); onSelect(item.id) }}>
       <canvas ref={canvasRef} width={SIZE.width} height={SIZE.height} aria-label={`生成的文字图片：${item.text}`} />
       {selected && (
         <>
           <div ref={toolbarRef} className="item-toolbar" style={toolbarLayout} onPointerDown={(event) => event.stopPropagation()}>
-            <button type="button" onClick={() => onRegenerate(item.id)}>重新扰动</button>
-            <span className="toolbar-divider" />
+            {mode !== 'wordArt' && <><button type="button" onClick={() => onRegenerate(item.id)}>重新扰动</button><span className="toolbar-divider" /></>}
             <button className={adjusting ? 'is-active' : ''} type="button" aria-expanded={adjusting} onClick={() => onToggleAdjust(item.id)}>调整</button>
             <span className="toolbar-divider" />
             <button type="button" onClick={() => downloadCanvas(canvasRef.current, `${safeFileName(item.text)}.png`)}>保存</button>
@@ -404,17 +534,12 @@ function CaptchaItem({ item, zoom, viewOffset, selected, adjusting, onSelect, on
           </div>
           {adjusting && (
             <div ref={adjustmentRef} className="item-adjustment" style={adjustmentLayout} onPointerDown={(event) => event.stopPropagation()} onClick={(event) => event.stopPropagation()}>
-              <PaletteControl value={item.palette} customPalette={item.customPalette} onChange={(updates) => onUpdate(item.id, updates)} />
-              <label className="adjustment-row intensity-row">
-                <span>扰动</span>
-                <input type="range" min="0.15" max="1" step="0.01" value={item.intensity} onChange={(event) => onUpdate(item.id, { intensity: Number(event.target.value) })} />
-                <output>{Math.round(item.intensity * 100)}</output>
-              </label>
-              <label className="adjustment-row outline-row">
-                <span>空心字</span>
-                <input type="checkbox" checked={item.outlined} onChange={(event) => onUpdate(item.id, { outlined: event.target.checked })} />
-                <i aria-hidden="true" />
-              </label>
+              {mode !== 'wordArt' && <PaletteControl value={item.palette} customPalette={item.customPalette} onChange={(updates) => onUpdate(item.id, updates)} />}
+              {mode === 'wordArt' && <div className="style-picker-field"><span>风格</span><WordArtStylePicker value={item.style || 'outline'} onChange={(style) => onUpdate(item.id, { style })} /></div>}
+              {mode !== 'wordArt' && <>
+                <label className="adjustment-row intensity-row"><span>扰动</span><input type="range" min="0.15" max="1" step="0.01" value={item.intensity} onChange={(event) => onUpdate(item.id, { intensity: Number(event.target.value) })} /><output>{Math.round(item.intensity * 100)}</output></label>
+                <label className="adjustment-row outline-row"><span>空心字</span><input type="checkbox" checked={item.outlined} onChange={(event) => onUpdate(item.id, { outlined: event.target.checked })} /><i aria-hidden="true" /></label>
+              </>}
             </div>
           )}
           {handles.map((direction) => <button key={direction} type="button" className={`resize-handle handle-${direction}`} aria-label={`向 ${direction} 缩放图片`} onPointerDown={(event) => onResizeStart(item, direction, event)} />)}
@@ -425,10 +550,10 @@ function CaptchaItem({ item, zoom, viewOffset, selected, adjusting, onSelect, on
   )
 }
 
-function Composer({ position, draft, setDraft, onCancel, onCreate }) {
+function Composer({ position, draft, setDraft, onCancel, onCreate, mode = 'captcha' }) {
   const formRef = useRef(null)
   const inputRef = useRef(null)
-  const [showAdvanced, setShowAdvanced] = useState(false)
+  const [showAdvanced, setShowAdvanced] = useState(mode === 'wordArt')
   const [layout, setLayout] = useState({ left: position.left, top: position.top })
 
   useLayoutEffect(() => {
@@ -454,7 +579,7 @@ function Composer({ position, draft, setDraft, onCancel, onCreate }) {
   }, [position.anchorX, position.anchorY, position.boundsWidth, position.boundsHeight, showAdvanced])
 
   useEffect(() => {
-    setShowAdvanced(false)
+    setShowAdvanced(mode === 'wordArt')
     const frame = requestAnimationFrame(() => {
       inputRef.current?.focus()
       inputRef.current?.select()
@@ -466,12 +591,12 @@ function Composer({ position, draft, setDraft, onCancel, onCreate }) {
     <form ref={formRef} className="composer" style={{ left: layout.left, top: layout.top }} onSubmit={onCreate}
       onClick={(event) => event.stopPropagation()} onPointerDown={(event) => event.stopPropagation()}>
       <button type="button" className="close-button" onClick={onCancel} aria-label="关闭">×</button>
-      <label className="field wide"><span className="sr-only">文字</span><input ref={inputRef} value={draft.text} maxLength={24} onChange={(event) => setDraft({ ...draft, text: event.target.value })} placeholder="输入文字…" /></label>
+      <label className="field wide"><span className="sr-only">文字</span><input ref={inputRef} value={draft.text} maxLength={24} onChange={(event) => setDraft({ ...draft, text: event.target.value.replace(/[\r\n]/g, '') })} placeholder={mode === 'wordArt' ? '输入文字…' : '输入文字…'} /></label>
       {showAdvanced && (
         <div className="advanced-settings">
-          <PaletteControl value={draft.palette} customPalette={draft.customPalette} onChange={(updates) => setDraft({ ...draft, ...updates })} />
-          <label className="field"><span>扰动程度 <b>{Math.round(draft.intensity * 100)}</b></span><input className="range" type="range" min="0.15" max="1" step="0.01" value={draft.intensity} onChange={(event) => setDraft({ ...draft, intensity: Number(event.target.value) })} /></label>
-          <label className="switch"><input type="checkbox" checked={draft.outlined} onChange={(event) => setDraft({ ...draft, outlined: event.target.checked })} /><span aria-hidden="true" />混合空心字</label>
+          {mode !== 'wordArt' && <PaletteControl value={draft.palette} customPalette={draft.customPalette} onChange={(updates) => setDraft({ ...draft, ...updates })} />}
+          {mode === 'wordArt' && <div className="field style-picker-field"><span>艺术字风格</span><WordArtStylePicker value={draft.style || 'outline'} onChange={(style) => setDraft({ ...draft, style })} /></div>}
+          {mode !== 'wordArt' && <><label className="field"><span>扰动程度 <b>{Math.round(draft.intensity * 100)}</b></span><input className="range" type="range" min="0.15" max="1" step="0.01" value={draft.intensity} onChange={(event) => setDraft({ ...draft, intensity: Number(event.target.value) })} /></label><label className="switch"><input type="checkbox" checked={draft.outlined} onChange={(event) => setDraft({ ...draft, outlined: event.target.checked })} /><span aria-hidden="true" />混合空心字</label></>}
         </div>
       )}
       <div className="composer-foot">
@@ -490,14 +615,14 @@ function Composer({ position, draft, setDraft, onCancel, onCreate }) {
   )
 }
 
-function App() {
+function App({ mode = 'captcha' }) {
   const boardRef = useRef(null)
   const contentRef = useRef(null)
   const [items, setItems] = useState([])
   const [selectedId, setSelectedId] = useState(null)
   const [adjustingId, setAdjustingId] = useState(null)
   const [composer, setComposer] = useState(null)
-  const [draft, setDraft] = useState(createRandomDraft)
+  const [draft, setDraft] = useState(() => (createRandomDraft()))
   const [zoom, setZoom] = useState(1)
   const [viewOffset, setViewOffset] = useState({ x: 0, y: 0 })
   const [zoomInput, setZoomInput] = useState('100')
@@ -588,9 +713,12 @@ function App() {
     const worldWidth = worldRight - worldLeft
     const worldHeight = worldBottom - worldTop
     const margin = 12 / zoom
-    const width = Math.min(DEFAULT_SIZE.width, worldWidth - margin * 2)
-    const height = Math.min(DEFAULT_SIZE.height, worldHeight - margin * 2)
-    const item = { id, ...draft, text: draft.text.trim(), seed: Date.now() % 2147483647,
+    const cleanText = draft.text.trim().replace(/[\r\n]+/g, ' ')
+    const collageWidth = clamp(72 + [...cleanText].length * (draft.fontSize || 100) * 0.78, 180, DEFAULT_SIZE.width)
+    const collageHeight = clamp((draft.fontSize || 100) * (draft.style === 'reflection' ? 1.95 : 1.35), MIN_SIZE.height, DEFAULT_SIZE.height)
+    const width = mode === 'wordArt' ? Math.min(collageWidth, worldWidth - margin * 2) : Math.min(DEFAULT_SIZE.width, worldWidth - margin * 2)
+    const height = mode === 'wordArt' ? Math.min(collageHeight, worldHeight - margin * 2) : Math.min(DEFAULT_SIZE.height, worldHeight - margin * 2)
+    const item = { id, ...draft, text: cleanText, seed: Date.now() % 2147483647,
       x: clamp(composer.worldX - width / 2, worldLeft + margin, worldRight - width - margin),
       y: clamp(composer.worldY - height / 2, worldTop + margin, worldBottom - height - margin), width, height }
     setItems((current) => [...current, item])
@@ -613,14 +741,16 @@ function App() {
     output.height = Math.round(rect.height * scale)
     const context = output.getContext('2d')
     context.scale(scale, scale)
-    context.fillStyle = '#ffffff'
-    context.fillRect(0, 0, rect.width, rect.height)
+    if (mode !== 'wordArt') {
+      context.fillStyle = '#ffffff'
+      context.fillRect(0, 0, rect.width, rect.height)
+    }
 
     items.forEach((item) => {
       const rendered = document.createElement('canvas')
       rendered.width = SIZE.width
       rendered.height = SIZE.height
-      renderCaptcha(rendered, item)
+      ;(mode === 'wordArt' ? renderCollage : renderCaptcha)(rendered, item)
       context.drawImage(rendered, viewOffset.x + item.x * zoom, viewOffset.y + item.y * zoom, item.width * zoom, item.height * zoom)
     })
 
@@ -712,9 +842,9 @@ function App() {
         </div>
       )}
       <div ref={contentRef} className="board-content">
-        {items.map((item) => <CaptchaItem key={item.id} item={item} zoom={zoom} viewOffset={viewOffset} selected={selectedId === item.id} adjusting={adjustingId === item.id} onSelect={selectItem} onRegenerate={regenerate} onDelete={remove} onResizeStart={startResize} onMoveStart={startMove} onToggleAdjust={toggleAdjust} onUpdate={updateItem} />)}
+        {items.map((item) => <CaptchaItem key={item.id} item={item} zoom={zoom} viewOffset={viewOffset} selected={selectedId === item.id} adjusting={adjustingId === item.id} onSelect={selectItem} onRegenerate={regenerate} onDelete={remove} onResizeStart={startResize} onMoveStart={startMove} onToggleAdjust={toggleAdjust} onUpdate={updateItem} renderer={mode === 'wordArt' ? renderCollage : renderCaptcha} mode={mode} />)}
       </div>
-      {composer && <><div className="origin-point" style={{ left: composer.anchorX, top: composer.anchorY }} /><Composer position={composer} draft={draft} setDraft={setDraft} onCancel={() => setComposer(null)} onCreate={createItem} /></>}
+      {composer && <><div className="origin-point" style={{ left: composer.anchorX, top: composer.anchorY }} /><Composer position={composer} draft={draft} setDraft={setDraft} onCancel={() => setComposer(null)} onCreate={createItem} mode={mode} /></>}
     </main>
   )
 }
